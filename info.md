@@ -3,6 +3,7 @@
 - OpenWrt >= 23.05
 - Linux Kernel >= 5.10
 - firewall4
+- R4S architecture aarch64_generic
 
 ## Install by iStore or Command
 
