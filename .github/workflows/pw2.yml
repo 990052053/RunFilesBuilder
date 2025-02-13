@@ -73,7 +73,7 @@ jobs:
               done
           done
 
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/kiddin9/"
+          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
           echo "Fetching a53 directory page from $BASE_URL_A53"
           wget -qO- "$BASE_URL_A53" | \
           while IFS= read -r LINE; do
