@@ -73,7 +73,7 @@ jobs:
               done
           done
 
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/kiddin9/"
+          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
           echo "Fetching a53 directory page from $BASE_URL_A53"
           wget -qO- "$BASE_URL_A53" | \
           while IFS= read -r LINE; do
@@ -122,7 +122,7 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/base/"
+          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/base/"
           wget -qO- "$BASE_URL_A53" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
@@ -155,7 +155,7 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/packages/"
+          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/packages/"
           wget -qO- "$BASE_URL_A53" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
@@ -198,7 +198,7 @@ jobs:
             release_name=$(TZ="Asia/Shanghai" date +'%Y-%m-%d %H:%M Build')
             echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
             ./makeself.sh x86_64/ ssrp_x86_64_$appversion.run "by github action" ./install.sh
-            ./makeself.sh a53/ ssrp_aarch64_cortex-a53_$appversion.run "by github action" ./install.sh
+            ./makeself.sh a53/ ssrp_aarch64_generic_$appversion.run "by github action" ./install.sh
             
             
       
