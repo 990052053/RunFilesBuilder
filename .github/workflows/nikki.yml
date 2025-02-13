@@ -41,7 +41,7 @@ jobs:
         run: |
           mkdir nikki_x86_64 nikki_aarch64_generic
           cp nikki_x86_64-openwrt-23.05/*.ipk nikki_x86_64/
-          cp nikki_aarch64_cortex-generic-openwrt-23.05/*.ipk nikki_aarch64_generic/
+          cp nikki_aarch64_generic-openwrt-23.05/*.ipk nikki_aarch64_generic/
           
 
       - name: Create install.sh scripts
