@@ -13,7 +13,7 @@ on:
       package_version:
         description: '这里是包版本'
         required: false
-        default: 'packages-23.05'  
+        default: 'packages-24.10'  
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
           mkdir -p x86_64/depends a53/depends
           package_version="${{ github.event.inputs.package_version }}"
           if [ -z "$package_version" ]; then
-            package_version="packages-23.05"
+            package_version="packages-24.10"
           fi
           echo "PACKAGE_VERSION=$package_version" >> $GITHUB_ENV
          
@@ -105,7 +105,7 @@ jobs:
       - name: download sing-box for a53 form aarch64_generic dir
         run: |
           SINGBOX_PREFIXES=("sing-box")
-          BASE_URL_A53="https://dl.openwrt.ai/packages-23.05/aarch64_generic/kiddin9/"
+          BASE_URL_A53="https://dl.openwrt.ai/packages-24.10/aarch64_generic/kiddin9/"
           echo "for sing-box Fetching a53 directory page from $BASE_URL_A53"
           wget -qO- "$BASE_URL_A53" | \
           while IFS= read -r LINE; do
