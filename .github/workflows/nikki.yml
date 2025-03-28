@@ -25,23 +25,23 @@ jobs:
           latest_tag=$(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | jq -r '.tag_name')
           
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-          # https://github.com/nikkinikki-org/OpenWrt-nikki/releases/download/v1.17.5/nikki_aarch64_cortex-a53-openwrt-23.05.tar.gz
+          # https://github.com/nikkinikki-org/OpenWrt-nikki/releases/download/v1.17.5/nikki_aarch64_generic-openwrt-23.05.tar.gz
 
       - name: Clone makeself repository
         run: git clone https://github.com/megastep/makeself.git
 
       - name: Download latest nikki files
         run: |
-          curl -LO $(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | grep -oP '"browser_download_url":\s*".*nikki_aarch64_cortex-a53-openwrt-24.10.tar.gz"' | cut -d '"' -f 4)
+          curl -LO $(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | grep -oP '"browser_download_url":\s*".*nikki_aarch64_generic-openwrt-24.10.tar.gz"' | cut -d '"' -f 4)
           curl -LO $(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | grep -oP '"browser_download_url":\s*".*nikki_x86_64-openwrt-24.10.tar.gz"' | cut -d '"' -f 4)
-          tar --one-top-level=nikki_aarch64_cortex-a53-openwrt-24.10 -xvzf nikki_aarch64_cortex-a53-openwrt-24.10.tar.gz
+          tar --one-top-level=nikki_aarch64_generic-openwrt-24.10 -xvzf nikki_aarch64_generic-openwrt-24.10.tar.gz
           tar --one-top-level=nikki_x86_64-openwrt-24.10 -xvzf nikki_x86_64-openwrt-24.10.tar.gz
 
-      - name: Organize files for aarch64_cortex-a53&x86_64
+      - name: Organize files for aarch64_generic&x86_64
         run: |
-          mkdir nikki_x86_64 nikki_aarch64_cortex-a53
+          mkdir nikki_x86_64 nikki_aarch64_generic
           cp nikki_x86_64-openwrt-24.10/*.ipk nikki_x86_64/
-          cp nikki_aarch64_cortex-a53-openwrt-24.10/*.ipk nikki_aarch64_cortex-a53/
+          cp nikki_aarch64_generic-openwrt-24.10/*.ipk nikki_aarch64_generic/
           
 
       - name: Create install.sh scripts
@@ -56,19 +56,19 @@ jobs:
           opkg install *.ipk
           EOF
           chmod +x nikki_x86_64/install.sh
-          cp nikki_x86_64/install.sh nikki_aarch64_cortex-a53/install.sh
+          cp nikki_x86_64/install.sh nikki_aarch64_generic/install.sh
           
 
       - name: Move nikki directories to makeself
         run: |
           mv nikki_x86_64 makeself/
-          mv nikki_aarch64_cortex-a53 makeself/
+          mv nikki_aarch64_generic makeself/
 
       - name: Create self-extracting packages
         run: |
           cd makeself
           ./makeself.sh nikki_x86_64/ nikki_${{ env.LATEST_TAG }}_x86_64.run "by github action" ./install.sh
-          ./makeself.sh nikki_aarch64_cortex-a53/ nikki_${{ env.LATEST_TAG }}_aarch64_cortex-a53.run "by github action" ./install.sh
+          ./makeself.sh nikki_aarch64_generic/ nikki_${{ env.LATEST_TAG }}_aarch64_generic.run "by github action" ./install.sh
           
 
       - name: Check file sizes
