@@ -63,7 +63,7 @@ jobs:
         run: | 
           ARCHITECTURES=(
           "AdGuardHome_aarch32=https://dl.openwrt.ai/$PACKAGE_VERSION/arm_cortex-a7/kiddin9/"
-          "AdGuardHome_aarch64=https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/kiddin9/"
+          "AdGuardHome_aarch64=https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
           "AdGuardHome_x86_64=https://dl.openwrt.ai/$PACKAGE_VERSION/x86_64/kiddin9/")
 
           # Process each architecture
