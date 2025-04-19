@@ -27,17 +27,17 @@ jobs:
         run: |
           git clone https://github.com/megastep/makeself.git
 
-      - name: Create directories for x86_64 and a53 and set PACKAGE_VERSION
+      - name: Create directories for x86_64 and generic and set PACKAGE_VERSION
         run: |
-          mkdir -p x86_64/depends a53/depends
+          mkdir -p x86_64/depends generic/depends
           package_version="${{ github.event.inputs.package_version }}"
           if [ -z "$package_version" ]; then
             package_version="packages-24.10"
           fi
           echo "PACKAGE_VERSION=$package_version" >> $GITHUB_ENV
           wget -O x86_64/depends/libopenssl3.ipk https://github.com/wukongdaily/RunFilesBuilder/releases/download/ipk/libopenssl3_3.0.16-r1_x86_64.ipk
-          wget -O a53/depends/libopenssl3.ipk https://github.com/wukongdaily/RunFilesBuilder/releases/download/ipk/libopenssl3_3.0.16-r1_aarch64_cortex-a53.ipk
-      - name: Download ipk files for x86_64 and a53
+          wget -O generic/depends/libopenssl3.ipk https://archive.openwrt.org/releases/packages-23.05/aarch64_generic/base/libopenssl3_3.0.15-1_aarch64_generic.ipk
+      - name: Download ipk files for x86_64 and generic
         run: |
           echo "Get PACKAGE_VERSION=$PACKAGE_VERSION"
           
@@ -73,9 +73,9 @@ jobs:
               done
           done
 
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/kiddin9/"
-          echo "Fetching a53 directory page from $BASE_URL_A53"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
+          echo "Fetching generic directory page from $BASE_URL_generic"
+          wget -qO- "$BASE_URL_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -95,9 +95,9 @@ jobs:
                           echo "Skip file: $FILE"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "generic/depends/$(basename $FILE_URL)" -#
                   fi
               done
           done
@@ -122,8 +122,8 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/base/"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/base/"
+          wget -qO- "$BASE_URL_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -132,9 +132,9 @@ jobs:
                           # echo "No file found in line, skipping"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "generic/depends/$(basename $FILE_URL)" -#
                     fi
               done
           done
@@ -155,8 +155,8 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_cortex-a53/packages/"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/packages/"
+          wget -qO- "$BASE_URL_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -165,9 +165,9 @@ jobs:
                           # echo "No file found in line, skipping"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "generic/depends/$(basename $FILE_URL)" -#
                     fi
               done
           done
@@ -176,21 +176,21 @@ jobs:
         run: |
           echo "List x86 depends ipk files"
           ls -lh x86_64/depends/
-          echo "List a53 depends ipk files"
-          ls -lh a53/depends/
+          echo "List generic depends ipk files"
+          ls -lh generic/depends/
           mv x86_64/depends/luci-app-ssr-plus*.ipk x86_64
-          mv a53/depends/luci-app-ssr-plus*.ipk a53
+          mv generic/depends/luci-app-ssr-plus*.ipk generic
       
       - name: Create install.sh 
         run: |
             echo -e "#!/bin/sh\n\nopkg update\nif [ \$? -ne 0 ]; then\n    echo \"update failed\"\n    exit 1\nfi\nopkg install depends/*.ipk --force-depends\nopkg install *.ipk --force-depends" > x86_64/install.sh
             chmod +x x86_64/install.sh
-            cp x86_64/install.sh a53/
+            cp x86_64/install.sh generic/
   
       - name: Create self-extracting archives
         run: |
             mv -f x86_64 makeself
-            mv -f a53 makeself
+            mv -f generic makeself
             cd makeself
             ipk_file=$(ls x86_64/*.ipk)
             appversion=$(basename "$ipk_file" | grep -oP '\d+\.\d+\.\d+')
@@ -198,7 +198,7 @@ jobs:
             release_name=$(TZ="Asia/Shanghai" date +'%Y-%m-%d %H:%M Build')
             echo "RELEASE_NAME=$release_name" >> $GITHUB_ENV
             ./makeself.sh x86_64/ ssrp_x86_64_$appversion.run "by github action" ./install.sh
-            ./makeself.sh a53/ ssrp_aarch64_cortex-a53_$appversion.run "by github action" ./install.sh
+            ./makeself.sh generic/ ssrp_aarch64_generic_$appversion.run "by github action" ./install.sh
             
             
       
