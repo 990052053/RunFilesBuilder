@@ -36,7 +36,7 @@ jobs:
           fi
           echo "PACKAGE_VERSION=$package_version" >> $GITHUB_ENV
           wget -O x86_64/depends/libopenssl3.ipk https://github.com/wukongdaily/RunFilesBuilder/releases/download/ipk/libopenssl3_3.0.16-r1_x86_64.ipk
-          wget -O generic/depends/libopenssl3.ipk https://archive.openwrt.org/releases/packages-23.05/aarch64_generic/base/libopenssl3_3.0.15-1_aarch64_generic.ipk
+          wget -O generic/depends/libopenssl3.ipk https://archive.openwrt.org/releases/packages-24.10/aarch64_generic/base/libopenssl3_3.0.16-r1_aarch64_generic.ipk
       - name: Download ipk files for x86_64 and generic
         run: |
           echo "Get PACKAGE_VERSION=$PACKAGE_VERSION"
