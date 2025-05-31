@@ -25,7 +25,7 @@ jobs:
           latest_tag=$(curl -s https://api.github.com/repos/nikkinikki-org/OpenWrt-nikki/releases/latest | jq -r '.tag_name')
           
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-          # https://github.com/nikkinikki-org/OpenWrt-nikki/releases/download/v1.17.5/nikki_aarch64_cortex-a53-openwrt-23.05.tar.gz
+          # https://github.com/nikkinikki-org/OpenWrt-nikki/releases/download/v1.17.5/nikki_aarch64_generic-openwrt-23.05.tar.gz
 
       - name: Clone makeself repository
         run: git clone https://github.com/megastep/makeself.git
