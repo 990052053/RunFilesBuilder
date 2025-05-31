@@ -31,7 +31,7 @@ jobs:
       - name: Download latest alist files
         run: |
           # 创建两个独立目录
-          mkdir -p alist_x86_64 alist_aarch64_cortex-a53
+          mkdir -p alist_x86_64 alist_aarch64_generic
       
           # 下载 x86_64 压缩包并解压到指定目录
           x86_url=$(curl -s https://api.github.com/repos/sbwml/luci-app-alist/releases/latest | grep -oP '"browser_download_url":\s*".*openwrt-22.03-x86_64.tar.gz"' | cut -d '"' -f4)
@@ -40,23 +40,23 @@ jobs:
           rm openwrt-22.03-x86_64.tar.gz 
       
           # 下载 aarch64 压缩包并解压到指定目录
-          aarch64_url=$(curl -s https://api.github.com/repos/sbwml/luci-app-alist/releases/latest | grep -oP '"browser_download_url":\s*".*openwrt-22.03-aarch64_cortex-a53.tar.gz"' | cut -d '"' -f4)
+          aarch64_url=$(curl -s https://api.github.com/repos/sbwml/luci-app-alist/releases/latest | grep -oP '"browser_download_url":\s*".*openwrt-22.03-aarch64_generic.tar.gz"' | cut -d '"' -f4)
           curl -LO $aarch64_url
-          tar --one-top-level=alist_aarch64_cortex-a53/openwrt-22.03-aarch64_cortex-a53 -xvzf openwrt-22.03-aarch64_cortex-a53.tar.gz
-          rm openwrt-22.03-aarch64_cortex-a53.tar.gz 
+          tar --one-top-level=alist_aarch64_generic/openwrt-22.03-aarch64_generic -xvzf openwrt-22.03-aarch64_generic.tar.gz
+          rm openwrt-22.03-aarch64_generic.tar.gz 
   
 
-      - name: List files for aarch64_cortex-a53&x86_64
+      - name: List files for aarch64_generic&x86_64
         run: |
           echo "打印目录 alist_x86_64/openwrt-22.03-x86_64/packages_ci"
           ls alist_x86_64/openwrt-22.03-x86_64/packages_ci
           mv alist_x86_64/openwrt-22.03-x86_64/packages_ci/*.ipk alist_x86_64
           rm -rf alist_x86_64/openwrt-22.03-x86_64
 
-          echo "打印目录 alist_aarch64_cortex-a53/openwrt-22.03-aarch64_cortex-a53/packages_ci"
-          ls alist_aarch64_cortex-a53/openwrt-22.03-aarch64_cortex-a53/packages_ci 
-          mv alist_aarch64_cortex-a53/openwrt-22.03-aarch64_cortex-a53/packages_ci/*.ipk alist_aarch64_cortex-a53
-          rm -rf alist_aarch64_cortex-a53/openwrt-22.03-aarch64_cortex-a53
+          echo "打印目录 alist_aarch64_generic/openwrt-22.03-aarch64_generic/packages_ci"
+          ls alist_aarch64_generic/openwrt-22.03-aarch64_generic/packages_ci 
+          mv alist_aarch64_generic/openwrt-22.03-aarch64_generic/packages_ci/*.ipk alist_aarch64_generic
+          rm -rf alist_aarch64_generic/openwrt-22.03-aarch64_generic
         
 
       - name: Create install.sh scripts
@@ -71,19 +71,19 @@ jobs:
           opkg install *.ipk
           EOF
           chmod +x alist_x86_64/install.sh
-          cp alist_x86_64/install.sh alist_aarch64_cortex-a53/install.sh
+          cp alist_x86_64/install.sh alist_aarch64_generic/install.sh
           
 
       - name: Move alist directories to makeself
         run: |
           mv alist_x86_64 makeself/
-          mv alist_aarch64_cortex-a53 makeself/
+          mv alist_aarch64_generic makeself/
 
       - name: Create self-extracting packages
         run: |
           cd makeself
           ./makeself.sh alist_x86_64/ alist_${{ env.LATEST_TAG }}_x86_64.run "by github action" ./install.sh
-          ./makeself.sh alist_aarch64_cortex-a53/ alist_${{ env.LATEST_TAG }}_aarch64_cortex-a53.run "by github action" ./install.sh
+          ./makeself.sh alist_aarch64_generic/ alist_${{ env.LATEST_TAG }}_aarch64_generic.run "by github action" ./install.sh
           
 
       - name: Check file sizes
