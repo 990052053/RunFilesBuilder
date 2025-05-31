@@ -45,17 +45,17 @@ jobs:
       - name: Show version
         run: echo "版本号是：${ssrp_version}"
 
-      - name: Create directories for x86_64 and a53 and set PACKAGE_VERSION
+      - name: Create directories for x86_64 and aarch64_generic and set PACKAGE_VERSION
         run: |
-          mkdir -p x86_64/depends a53/depends
+          mkdir -p x86_64/depends aarch64_generic/depends
           package_version="${{ github.event.inputs.package_version }}"
           if [ -z "$package_version" ]; then
             package_version="packages-24.10"
           fi
           echo "PACKAGE_VERSION=$package_version" >> $GITHUB_ENV
           wget -O x86_64/depends/libopenssl3.ipk https://github.com/wukongdaily/RunFilesBuilder/releases/download/ipk/libopenssl3_3.0.16-r1_x86_64.ipk
-          wget -O a53/depends/libopenssl3.ipk https://archive.immortalwrt.org/releases/24.10.0-rc3/packages/aarch64_generic/base/libopenssl3_3.0.16-r1_aarch64_generic.ipk
-      - name: Download ipk files for x86_64 and a53
+          wget -O aarch64_generic/depends/libopenssl3.ipk https://archive.immortalwrt.org/releases/24.10.0-rc3/packages/aarch64_generic/base/libopenssl3_3.0.16-r1_aarch64_generic.ipk
+      - name: Download ipk files for x86_64 and aarch64_generic
         run: |
           echo "Get PACKAGE_VERSION=$PACKAGE_VERSION"
           
@@ -91,9 +91,9 @@ jobs:
               done
           done
 
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
-          echo "Fetching a53 directory page from $BASE_URL_A53"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_aarch64_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/kiddin9/"
+          echo "Fetching aarch64_generic directory page from $BASE_URL_aarch64_generic"
+          wget -qO- "$BASE_URL_aarch64_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -113,9 +113,9 @@ jobs:
                           echo "Skip file: $FILE"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_aarch64_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "aarch64_generic/depends/$(basename $FILE_URL)" -#
                   fi
               done
           done
@@ -140,8 +140,8 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/base/"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_aarch64_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/base/"
+          wget -qO- "$BASE_URL_aarch64_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -150,9 +150,9 @@ jobs:
                           # echo "No file found in line, skipping"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_aarch64_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "aarch64_generic/depends/$(basename $FILE_URL)" -#
                     fi
               done
           done
@@ -173,8 +173,8 @@ jobs:
                     fi
               done
           done
-          BASE_URL_A53="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/packages/"
-          wget -qO- "$BASE_URL_A53" | \
+          BASE_URL_aarch64_generic="https://dl.openwrt.ai/$PACKAGE_VERSION/aarch64_generic/packages/"
+          wget -qO- "$BASE_URL_aarch64_generic" | \
           while IFS= read -r LINE; do
               for PREFIX in "${FILE_PREFIXES[@]}"; do
                   if [[ "$LINE" == *"$PREFIX"* ]]; then
@@ -183,9 +183,9 @@ jobs:
                           # echo "No file found in line, skipping"
                           continue
                       fi
-                      FILE_URL="${BASE_URL_A53}${FILE}"
+                      FILE_URL="${BASE_URL_aarch64_generic}${FILE}"
                       echo "Found file: $FILE_URL"
-                      curl -L --fail "$FILE_URL" -o "a53/depends/$(basename $FILE_URL)" -#
+                      curl -L --fail "$FILE_URL" -o "aarch64_generic/depends/$(basename $FILE_URL)" -#
                     fi
               done
           done
@@ -194,12 +194,12 @@ jobs:
         run: |
           echo "List x86 depends ipk files"
           ls -lh x86_64/depends/
-          echo "List a53 depends ipk files"
-          ls -lh a53/depends/
+          echo "List aarch64_generic depends ipk files"
+          ls -lh aarch64_generic/depends/
           mv x86_64/depends/luci-app-ssr-plus*.ipk x86_64/
-          mv a53/depends/luci-app-ssr-plus*.ipk a53/
-          echo "查看a53目录"
-          ls a53/
+          mv aarch64_generic/depends/luci-app-ssr-plus*.ipk aarch64_generic/
+          echo "查看aarch64_generic目录"
+          ls aarch64_generic/
           echo "查看x86_64目录"
           ls x86_64/
       
@@ -207,7 +207,7 @@ jobs:
         run: |
             echo -e "#!/bin/sh\n\nopkg update\nif [ \$? -ne 0 ]; then\n    echo \"update failed\"\n    exit 1\nfi\nopkg install depends/*.ipk --force-depends\nopkg install *.ipk --force-depends" > x86_64/install.sh
             chmod +x x86_64/install.sh
-            cp x86_64/install.sh a53/
+            cp x86_64/install.sh aarch64_generic/
 
       - name: Clone makeself repo
         run: |
@@ -216,7 +216,7 @@ jobs:
       - name: Change Dir
         run: |
             mv -f x86_64/ makeself/
-            mv -f a53/ makeself/
+            mv -f aarch64_generic/ makeself/
             echo "移动后再查看makeself/的文件"
             ls -lah makeself/
 
@@ -225,7 +225,7 @@ jobs:
         run: |
             cd makeself
             ./makeself.sh x86_64/ ssrp_x86_64-${ssrp_version}.run "by github action" ./install.sh
-            ./makeself.sh a53/ ssrp_aarch64_generic-${ssrp_version}.run "by github action" ./install.sh
+            ./makeself.sh aarch64_generic/ ssrp_aarch64_generic-${ssrp_version}.run "by github action" ./install.sh
                 
       
       - name: Upload all .run files to GitHub Release
