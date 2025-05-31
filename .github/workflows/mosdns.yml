@@ -59,9 +59,9 @@ jobs:
 
           # 提取下载链接
           mosdns_x86_64=$(grep "browser_download_url" releases.txt | grep "mosdns_5" | grep "x86_64.ipk" | head -1 | awk -F '"' '{print $4}')
-          mosdns_aarch64_cortex_a53=$(grep "browser_download_url" releases.txt | grep "mosdns_5" | grep "aarch64_generic.ipk" | head -1 | awk -F '"' '{print $4}')
+          mosdns_aarch64_generic=$(grep "browser_download_url" releases.txt | grep "mosdns_5" | grep "aarch64_generic.ipk" | head -1 | awk -F '"' '{print $4}')
           v2dat_x86_64=$(grep "browser_download_url" releases.txt | grep "v2dat_" | grep "x86_64.ipk" | head -1 | awk -F '"' '{print $4}')
-          v2dat_aarch64_cortex_a53=$(grep "browser_download_url" releases.txt | grep "v2dat_" | grep "aarch64_generic.ipk" | head -1 | awk -F '"' '{print $4}')
+          v2dat_aarch64_generic=$(grep "browser_download_url" releases.txt | grep "v2dat_" | grep "aarch64_generic.ipk" | head -1 | awk -F '"' '{print $4}')
           luci_app=$(grep "browser_download_url" releases.txt | grep "luci-app-mosdns_" | head -1 | awk -F '"' '{print $4}')
           luci_i18n=$(grep "browser_download_url" releases.txt | grep "luci-i18n-mosdns-zh-cn" | head -1 | awk -F '"' '{print $4}')
           geoip=$(grep "browser_download_url" releases.txt | grep "v2ray-geoip" | head -1 | awk -F '"' '{print $4}')
@@ -69,9 +69,9 @@ jobs:
 
           # 下载文件到对应目录
           download_file "$mosdns_x86_64" "mosdns_x86_64"
-          download_file "$mosdns_aarch64_cortex_a53" "mosdns_aarch64_generic"
+          download_file "$mosdns_aarch64_generic" "mosdns_aarch64_generic"
           download_file "$v2dat_x86_64" "mosdns_x86_64"
-          download_file "$v2dat_aarch64_cortex_a53" "mosdns_aarch64_generic"
+          download_file "$v2dat_aarch64_generic" "mosdns_aarch64_generic"
           download_file "$luci_app" "mosdns_x86_64"
           download_file "$luci_app" "mosdns_aarch64_generic"
           download_file "$luci_i18n" "mosdns_x86_64"
