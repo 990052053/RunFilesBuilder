@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Create OpenClash & openclash directory for git & ipk
-        run: mkdir -p OpenClash openclash-x86 openclash-a53
+        run: mkdir -p OpenClash openclash-x86 openclash-generic
         
       - name: Checkout package branch to OpenClash directory
         uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       - name: Copy latest openclash IPK to openclash directory
         run: |
           cp OpenClash/master/*.ipk openclash-x86
-          cp OpenClash/master/*.ipk openclash-a53
+          cp OpenClash/master/*.ipk openclash-generic
 
       - name: Get version info
         id: extract_version
@@ -53,11 +53,11 @@ jobs:
       - name: Copy latest meta core to openclash directory
         run: |
           tar -xzvf Meta/master/meta/clash-linux-amd64.tar.gz -C openclash-x86
-          tar -xzvf Meta/master/meta/clash-linux-arm64.tar.gz -C openclash-a53
+          tar -xzvf Meta/master/meta/clash-linux-arm64.tar.gz -C openclash-generic
           mv openclash-x86/clash openclash-x86/clash_meta
-          mv openclash-a53/clash openclash-a53/clash_meta
+          mv openclash-generic/clash openclash-generic/clash_meta
           ls openclash-x86
-          ls openclash-a53
+          ls openclash-generic
 
       - name: Create install.sh script save to openclash directory
         run: |
@@ -79,8 +79,8 @@ jobs:
           fi
           EOF
           chmod +x openclash-x86/install.sh
-          cp openclash-x86/install.sh openclash-a53/install.sh
-          chmod +x openclash-a53/install.sh
+          cp openclash-x86/install.sh openclash-generic/install.sh
+          chmod +x openclash-generic/install.sh
 
       - name: Clone makeself repository for self-extracting installer
         run: | 
@@ -90,10 +90,10 @@ jobs:
       - name: move openclash directory to makeself & create run
         run: |
           mv openclash-x86 makeself/
-          mv openclash-a53 makeself/
+          mv openclash-generic makeself/
           cd makeself
           ./makeself.sh openclash-x86/ openclash-x86-64-${{ env.version }}.run "by github action" ./install.sh
-          ./makeself.sh openclash-a53/ openclash-aarch64_generic-${{ env.version }}.run "by github action" ./install.sh
+          ./makeself.sh openclash-generic/ openclash-aarch64_generic-${{ env.version }}.run "by github action" ./install.sh
 
       - name: Generate new tag & release
         uses: softprops/action-gh-release@master
